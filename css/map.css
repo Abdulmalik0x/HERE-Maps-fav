@@ -1,0 +1,12 @@
+#map {
+    width: 100%; 
+    height: 100vh;
+}
+
+.H_ib_content {
+    width: 50vh;
+}
+
+.map-elements:hover {
+    cursor: pointer;
+}
