@@ -31,19 +31,11 @@ var initLocations = [
             '<div class="map-elements content" style="width: 100%">Islam is the second religion by 24 %, makkah is the holy place for all muslims across the world and thier destination in thier prayers.</div>'
     }]
 
-
-/**
- * Creates a new marker and adds it to a group
- * @param {H.map.Group} group       The group holding the new marker
- * @param {H.geo.Point} coordinate  The location of the marker
- * @param {String} html             Data associated with the marker
- */
-
 // var group = new H.map.Group;
 // var coordinate = new H.geo.Point;
 
 var addMarkerToGroup = function (group, item) {
-    console.log(item)
+    // console.log(item)
     var marker = new H.map.Marker(item.position);
     // var position = new H.geo.Point(position);
     // add custom data to the marker
@@ -54,6 +46,19 @@ var addMarkerToGroup = function (group, item) {
     this.position = ko.observable(item.position);
     this.content = ko.observable(item.content);
 }
+
+var setPosition = function (group, map) {
+    // Act like a container
+    // var group = this.group;
+
+    map.addObject(group);
+    console.log("Group added to map");
+    map.setCenter();
+    map.setZoom(5);
+
+
+}
+
 
 
 /**
@@ -66,12 +71,9 @@ function addInfoBubble(ui, group, map) {
     // var group = this.group;
 
     map.addObject(group);
-    console.log("Group added to map");
-
+    
     // add 'tap' event listener, that opens info bubble, to the group
     group.addEventListener('tap', function (evt) {
-        // Add resetPosition to the markers
-        console.log(evt.target.getPosition());
         map.setCenter(evt.target.getPosition());
         map.setZoom(5);
         // event target is the marker itself, group is a parent event target
@@ -99,14 +101,6 @@ var ViewModel = function () {
     self.query = ko.observable('');
     self.markers = ko.observableArray([]);
 
-
-    self.removeElementFromObsArray = function (Name) {
-        self.locList.remove(function (obj) {
-            return obj.name == Name;
-        });
-        // players.removePlayer('Player2');
-    }
-
     // everytime query/placeList changes, this gets computed again
     self.filteredLocations = ko.computed(function () {
         if (!self.query()) {
@@ -119,7 +113,7 @@ var ViewModel = function () {
                 self.locList.push(new addMarkerToGroup(group, locList));
                 console.log("locList " + locList);
             });
-            
+
             return self.locList();
         } else {
             self.locList.removeAll();
@@ -129,17 +123,16 @@ var ViewModel = function () {
 
             console.log("filteredList " + filteredList);
             filteredList.forEach(function (locList) { //find
-                    self.locList.push(new addMarkerToGroup(group, locList));
-                    console.log("locList 2 " + locList);
-                });
-            
+                self.locList.push(new addMarkerToGroup(group, locList));
+                console.log("locList 2 " + locList);
+            });
+
             resultList = self.locList()
                 .filter(location => location.name().toLowerCase().indexOf(self.query().toLowerCase()) > -1);
             return resultList
 
         }
     });
-
 
     // initialize communication with the platform
     var platform = new H.service.Platform({
@@ -162,12 +155,32 @@ var ViewModel = function () {
             pixelRatio: pixelRatio
         });
 
-    // MapEvents enables the event system
-    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+    
+    this.setPosition = function(data){ 
+        resultList = self.locList()
+                .filter(location => location.name().toLowerCase().indexOf(self.query().toLowerCase()) > -1);
+        console.log(data.target.childnodes.data)
+            map.setCenter({lat: 22, lng:11});
+            map.setZoom(5);
+            pixelRatio: pixelRatio
+          }
+
+    this.resetPosition = function (data, event) {
+        elementName = event.target.firstChild.data
+        filteredList = initLocations.filter(initLocation => initLocation.name.toLowerCase().indexOf(elementName.toLowerCase()) > -1);
+        resultList = self.locList()
+                .filter(location => location.name().toLowerCase().indexOf(elementName.toLowerCase()) > -1);
+        console.log(filteredList[0]) // fetch element name
+        map.setCenter({lat: filteredList[0].position.lat, lng:filteredList[0].position.lng});
+            map.setZoom(5);
+            pixelRatio: pixelRatio
+    };
+
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 
     // create default UI with layers provided by the platform
     var ui = H.ui.UI.createDefault(map, defaultLayers);
+
 
     // Now use the map as required...
     addInfoBubble(ui, group, map);

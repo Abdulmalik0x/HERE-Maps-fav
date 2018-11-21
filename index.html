@@ -40,8 +40,9 @@
                 </li>
                 <input type="text" data-bind="value: query, valueUpdate: 'keyup'" placeholder="Search...">
 
-                <li data-bind="foreach:filteredLocations">
-                    <a href="#" data-bind="text : name"></a>
+                <li id="locationList" data-bind="foreach:filteredLocations">
+                    <a href="#" data-bind="click: $parent.resetPosition , text : name"></a>
+                    <script>console.log($data)</script>
                 </li>
 
             </ul>
