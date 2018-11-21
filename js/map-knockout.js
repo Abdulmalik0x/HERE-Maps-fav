@@ -155,16 +155,6 @@ var ViewModel = function () {
             pixelRatio: pixelRatio
         });
 
-    
-    this.setPosition = function(data){ 
-        resultList = self.locList()
-                .filter(location => location.name().toLowerCase().indexOf(self.query().toLowerCase()) > -1);
-        console.log(data.target.childnodes.data)
-            map.setCenter({lat: 22, lng:11});
-            map.setZoom(5);
-            pixelRatio: pixelRatio
-          }
-
     this.resetPosition = function (data, event) {
         elementName = event.target.firstChild.data
         filteredList = initLocations.filter(initLocation => initLocation.name.toLowerCase().indexOf(elementName.toLowerCase()) > -1);
